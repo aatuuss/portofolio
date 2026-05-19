@@ -1,0 +1,86 @@
+"use client";
+
+import { useEffect, useId, useState } from "react";
+import Particles from "@tsparticles/react";
+import { initParticlesEngine } from "@tsparticles/react";
+import { loadSlim } from "@tsparticles/slim";
+
+export function Sparkles(props) {
+  const {
+    className,
+    size = 1,
+    minSize,
+    density = 800,
+    speed = 1,
+    minSpeed,
+    opacity = 1,
+    opacitySpeed = 3,
+    minOpacity,
+    color = "#FFFFFF",
+    background = "transparent",
+    options = {},
+  } = props;
+
+  const [isReady, setIsReady] = useState(false);
+  const id = useId();
+
+  useEffect(() => {
+    initParticlesEngine(async (engine) => {
+      await loadSlim(engine);
+    }).then(() => setIsReady(true));
+  }, []);
+
+  const defaultOptions = {
+    background: {
+      color: { value: background },
+    },
+    fullScreen: {
+      enable: false,
+      zIndex: 1,
+    },
+    fpsLimit: 120,
+    particles: {
+      color: { value: color },
+      move: {
+        enable: true,
+        direction: "none",
+        speed: {
+          min: minSpeed || speed / 10,
+          max: speed,
+        },
+        straight: false,
+      },
+      number: {
+        value: density,
+      },
+      opacity: {
+        value: {
+          min: minOpacity || opacity / 10,
+          max: opacity,
+        },
+        animation: {
+          enable: true,
+          sync: false,
+          speed: opacitySpeed,
+        },
+      },
+      size: {
+        value: {
+          min: minSize || size / 2.5,
+          max: size,
+        },
+      },
+    },
+    detectRetina: true,
+  };
+
+  if (!isReady) return null;
+
+  return (
+    <Particles
+      id={id}
+      className={className}
+      options={{ ...defaultOptions, ...options }}
+    />
+  );
+}
