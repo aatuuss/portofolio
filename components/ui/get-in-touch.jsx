@@ -26,7 +26,7 @@ export const ProfessionalConnect = () => {
       ),
       gradient: 'from-blue-600 to-blue-400',
       shadowColor: 'rgba(59, 130, 246, 0.5)',
-      link: 'https://linkedin.com',
+      link: 'https://www.linkedin.com/in/nikmatus-solihah-72361840a/',
       description: 'Professional Network'
     },
     {
@@ -38,7 +38,7 @@ export const ProfessionalConnect = () => {
       ),
       gradient: 'from-gray-700 to-gray-500',
       shadowColor: 'rgba(75, 85, 99, 0.5)',
-      link: 'https://github.com',
+      link: 'https://github.com/aatuuss',
       description: 'Code Repository'
     },
     {
@@ -51,7 +51,7 @@ export const ProfessionalConnect = () => {
       ),
       gradient: 'from-emerald-600 to-green-400',
       shadowColor: 'rgba(16, 185, 129, 0.5)',
-      link: 'https://wa.me/6281234567890',
+      link: 'https://wa.me/6282141342998',
       description: 'Direct Message'
     },
     {
@@ -63,7 +63,7 @@ export const ProfessionalConnect = () => {
       ),
       gradient: 'from-purple-600 via-pink-600 to-orange-500',
       shadowColor: 'rgba(219, 39, 119, 0.5)',
-      link: 'https://instagram.com',
+      link: 'https://www.instagram.com/_505atus/?utm_source=ig_web_button_share_sheet',
       description: 'Visual Stories'
     }
   ];
