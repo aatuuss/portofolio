@@ -1,9 +1,9 @@
 ﻿"use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { AnimatePresence, motion } from "framer-motion"
-import { ArrowRight, ChevronDown, ChevronUp, ExternalLink } from "lucide-react"
+import { ArrowRight, CalendarDays, ChevronDown, ChevronUp, ExternalLink, MapPin, Sparkles } from "lucide-react"
 
 const FigmaIcon = ({ className }) => (
   <svg
@@ -132,27 +132,52 @@ function CardContent({ contentType, isExpanded, onToggle, cardId }) {
 
   if (data.type === "work") {
     return (
-      <div className="flex h-full w-full flex-col gap-0 pb-3">
-        <div className="relative h-[120px] w-full shrink-0 overflow-hidden rounded-t-xl">
+      <div className="flex h-full w-full flex-col overflow-hidden rounded-[inherit]">
+        <div className="relative h-38 w-full shrink-0 overflow-hidden">
           <Image
             src={data.image || "/placeholder.svg"}
             alt={data.company}
             fill
             sizes="(max-width: 640px) 100vw, 512px"
-            className="object-cover transition-transform duration-500 hover:scale-105"
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
-          <div className="absolute bottom-2 left-3 right-3">
-            <h3 className="font-bold text-foreground text-sm leading-tight drop-shadow-md">{data.company}</h3>
-            <p className="text-[10px] text-foreground/80 font-medium drop-shadow-sm">{data.period}</p>
+          <div className="absolute inset-0 bg-linear-to-t from-background via-background/35 to-transparent" />
+          <div className="absolute inset-x-0 top-0 h-16 bg-linear-to-b from-black/35 to-transparent" />
+
+          <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-background/75 px-2.5 py-1 text-[10px] font-semibold tracking-[0.18em] text-foreground shadow-[0_10px_24px_-12px_rgba(15,23,42,0.9)] backdrop-blur-md">
+            <Sparkles className="size-3 text-indigo-400" />
+            WORK EXPERIENCE
+          </div>
+
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            <div className="flex items-end justify-between gap-3">
+              <div className="min-w-0">
+                <h3 className="truncate text-base font-bold leading-tight text-foreground drop-shadow-md">
+                  {data.company}
+                </h3>
+                <div className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-foreground/10 px-2.5 py-1 text-[10px] font-medium text-foreground/85 backdrop-blur-sm">
+                  <CalendarDays className="size-3 text-indigo-400" />
+                  {data.period}
+                </div>
+              </div>
+
+              <div className="shrink-0 rounded-full border border-white/10 bg-background/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/80 backdrop-blur-md">
+                Internship
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="flex-1 px-3 pt-2 flex flex-col">
-          <p className="text-xs font-semibold text-indigo-500 mb-0.5 leading-tight">{data.position}</p>
-          <p className="text-[10px] text-muted-foreground flex items-center gap-1 mb-2">
-             • {data.location}
-          </p>
+        <div className="flex flex-1 flex-col gap-3 px-4 pb-4 pt-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/15 bg-indigo-500/10 px-2.5 py-1 text-[10px] font-semibold text-indigo-500">
+              <MapPin className="size-3" />
+              {data.location}
+            </span>
+            <span className="rounded-full border border-border/70 bg-secondary/70 px-2.5 py-1 text-[10px] font-medium text-muted-foreground">
+              {data.position}
+            </span>
+          </div>
 
           <AnimatePresence>
             {isExpanded && (
@@ -163,25 +188,25 @@ function CardContent({ contentType, isExpanded, onToggle, cardId }) {
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <div className="mt-1 pt-2 border-t border-border/50">
-                  <ul className="space-y-1 mb-2">
+                <div className="rounded-2xl border border-border/60 bg-background/50 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] backdrop-blur-sm">
+                  <ul className="space-y-2">
                     {data.highlights.map((highlight, idx) => (
-                      <li key={idx} className="text-[11px] text-foreground/80 leading-relaxed flex items-start gap-1.5">
-                        <span className="text-indigo-500 font-bold mt-px">•</span>
+                      <li key={idx} className="flex items-start gap-2 text-[11px] leading-relaxed text-foreground/85">
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500 shadow-[0_0_12px_rgba(99,102,241,0.6)]" />
                         <span>{highlight}</span>
                       </li>
                     ))}
                   </ul>
-                  
+
                   {data.links && data.links.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2 pt-2 border-t border-border/30 pb-2">
+                    <div className="mt-3 flex flex-wrap gap-2 border-t border-border/30 pt-3">
                       {data.links.map((link, idx) => (
                         <a 
                           key={idx} 
                           href={link.url} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-semibold transition-all hover:scale-105 ${link.type === 'figma' ? 'bg-[#F24E1E]/10 text-[#F24E1E] hover:bg-[#F24E1E]/20' : 'bg-indigo-500/10 text-indigo-500 hover:bg-indigo-500/20'}`}
+                          className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${link.type === 'figma' ? 'bg-[#F24E1E]/10 text-[#F24E1E] hover:bg-[#F24E1E]/20' : 'bg-indigo-500/10 text-indigo-500 hover:bg-indigo-500/20'}`}
                           onClick={(e) => e.stopPropagation()}
                         >
                           {link.type === 'figma' ? <FigmaIcon className="size-3" /> : <ExternalLink className="size-3" />}
@@ -199,7 +224,7 @@ function CardContent({ contentType, isExpanded, onToggle, cardId }) {
             <button
               type="button"
               onClick={() => onToggle(cardId)}
-              className="flex w-full h-7 shrink-0 cursor-pointer select-none items-center justify-center gap-1.5 rounded-md bg-secondary hover:bg-secondary/80 text-[11px] font-semibold text-secondary-foreground transition-colors"
+              className="flex h-9 w-full shrink-0 cursor-pointer select-none items-center justify-center gap-1.5 rounded-full border border-border/60 bg-linear-to-r from-secondary via-secondary to-secondary/70 text-[11px] font-semibold text-secondary-foreground shadow-[0_10px_24px_-18px_rgba(15,23,42,0.9)] transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-500/30 hover:bg-secondary/90"
             >
               {isExpanded ? (
                 <>
@@ -219,7 +244,7 @@ function CardContent({ contentType, isExpanded, onToggle, cardId }) {
 
   return (
     <div className="flex h-full w-full flex-col gap-4">
-      <div className="-outline-offset-1 relative flex h-[200px] w-full items-center justify-center overflow-hidden rounded-xl outline outline-black/10 dark:outline-white/10">
+      <div className="-outline-offset-1 relative flex h-50 w-full items-center justify-center overflow-hidden rounded-xl outline outline-black/10 dark:outline-white/10">
         <Image
           src={data.image || "/placeholder.svg"}
           alt={data.title}
@@ -269,8 +294,10 @@ function AnimatedCard({ card, index, isAnimating, isExpanded, onToggle }) {
         x: "-50%",
         bottom: 0,
       }}
-      className={`absolute flex ${isExpanded ? 'h-auto' : 'h-[280px]'} w-[324px] items-center justify-center overflow-hidden rounded-t-xl border-x border-t border-border bg-card p-1 shadow-lg will-change-transform sm:w-[512px]`}
+      className={`group absolute flex ${isExpanded ? 'h-auto' : 'h-79'} w-81 items-center justify-center overflow-hidden rounded-[28px] border border-white/10 bg-linear-to-br from-card via-card to-secondary/35 p-1 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.55)] ring-1 ring-white/5 backdrop-blur-xl will-change-transform sm:w-lg`}
     >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(99,102,241,0.18),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(56,189,248,0.12),transparent_35%)]" />
+      <div className="pointer-events-none absolute inset-px rounded-[26px] border border-white/5" />
       <CardContent contentType={card.contentType} isExpanded={isExpanded} onToggle={onToggle} cardId={card.id} />
     </motion.div>
   )
@@ -281,6 +308,29 @@ export default function AnimatedCardStack() {
   const [isAnimating, setIsAnimating] = useState(false)
   const [nextId, setNextId] = useState(5)
   const [expandedCards, setExpandedCards] = useState({})
+  const [hasEntered, setHasEntered] = useState(false)
+  const containerRef = useRef(null)
+
+  // Detect scroll into view for entrance animation
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !hasEntered) {
+            setHasEntered(true)
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [hasEntered])
 
   const handleToggleExpand = (cardId) => {
     setExpandedCards(prev => ({
@@ -312,31 +362,52 @@ export default function AnimatedCardStack() {
   }
 
   return (
-    <div className="flex w-full flex-col items-center justify-center pt-2">
-      <div className="relative min-h-[380px] w-full overflow-visible sm:w-[644px]">
+    <motion.div
+      ref={containerRef}
+      initial={{ opacity: 0, y: 40 }}
+      animate={hasEntered ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="flex w-full flex-col items-center justify-center pt-3"
+    >
+      <motion.div className="relative min-h-105 w-full overflow-visible sm:w-161">
         <AnimatePresence initial={false}>
           {cards.slice(0, 3).map((card, index) => (
-            <AnimatedCard 
-              key={card.id} 
-              card={card} 
-              index={index} 
-              isAnimating={isAnimating}
-              isExpanded={expandedCards[card.id] || false}
-              onToggle={handleToggleExpand}
-            />
+            <motion.div
+              key={card.id}
+              initial={hasEntered ? { opacity: 0, scale: 0.8 } : false}
+              animate={hasEntered ? { opacity: 1, scale: 1 } : false}
+              transition={{
+                duration: 0.5,
+                delay: index * 0.15,
+                ease: "easeOut"
+              }}
+            >
+              <AnimatedCard 
+                card={card} 
+                index={index} 
+                isAnimating={isAnimating}
+                isExpanded={expandedCards[card.id] || false}
+                onToggle={handleToggleExpand}
+              />
+            </motion.div>
           ))}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
-      <div className="relative z-10 -mt-px flex w-full items-center justify-center border-t border-border py-4">
+      <motion.div
+        initial={hasEntered ? { opacity: 0, y: 10 } : { opacity: 0, y: 10 }}
+        animate={hasEntered ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+        transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
+        className="relative z-10 -mt-px flex w-full items-center justify-center border-t border-border/70 py-4"
+      >
         <button
           type="button"
           onClick={handleAnimate}
-          className="flex h-9 cursor-pointer select-none items-center justify-center gap-1 overflow-hidden rounded-lg border border-border bg-background px-3 font-medium text-secondary-foreground transition-all hover:bg-secondary/80 active:scale-[0.98]"
+          className="flex h-10 cursor-pointer select-none items-center justify-center gap-1 overflow-hidden rounded-full border border-white/10 bg-linear-to-r from-background via-secondary/40 to-background px-4 font-medium text-secondary-foreground shadow-[0_18px_40px_-24px_rgba(15,23,42,0.9)] transition-all hover:-translate-y-0.5 hover:border-indigo-500/25 hover:bg-secondary/70 active:scale-[0.98]"
         >
           Animate
         </button>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }

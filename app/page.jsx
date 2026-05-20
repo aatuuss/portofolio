@@ -115,6 +115,7 @@ export default function Home() {
           imageSrc="/img/nikmatus_remove.png"
           imageAlt="Foto Nikmatus"
           overlayText={{ part1: 'Nikmatus', part2: 'Solihah' }}
+          startAnimation={!showIntro}
         />
 
         <div id="work-experience" style={{ scrollMarginTop: '96px' }} className="mx-auto w-full max-w-5xl py-8 px-6 md:px-12">

@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { ArrowUpRight } from "lucide-react"
+import { motion } from "framer-motion"
 
   const projects = [
   {
@@ -28,9 +29,31 @@ export function ProjectShowcase() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [smoothPosition, setSmoothPosition] = useState({ x: 0, y: 0 })
   const [isVisible, setIsVisible] = useState(false)
+  const [hasEntered, setHasEntered] = useState(false)
   const containerRef = useRef(null)
   const animationRef = useRef(null)
   
+
+  useEffect(() => {
+    // Scroll entrance animation detection
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !hasEntered) {
+            setHasEntered(true)
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [hasEntered])
 
   useEffect(() => {
     const lerp = (start, end, factor) => start + (end - start) * factor
@@ -66,8 +89,18 @@ export function ProjectShowcase() {
   }
 
   return (
-    <section ref={containerRef} onMouseMove={handleMouseMove} className="relative w-full max-w-3xl mx-auto px-6 py-6">
-      <h2 className="text-muted-foreground text-sm font-medium tracking-wide uppercase mb-4">CERTIFICATIONS</h2>
+    <motion.section
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      initial={{ opacity: 0, y: 40 }}
+      animate={hasEntered ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="relative w-full max-w-3xl mx-auto px-6 py-6">
+      <motion.h2
+        initial={{ opacity: 0, x: -20 }}
+        animate={hasEntered ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="text-muted-foreground text-sm font-medium tracking-wide uppercase mb-4">CERTIFICATIONS</motion.h2>
 
       <div
         className="pointer-events-none fixed z-50 overflow-hidden rounded-xl shadow-2xl"
@@ -122,7 +155,7 @@ export function ProjectShowcase() {
                   />
                 </div>
               ))}
-              <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-background/20 to-transparent" />
             </div>
           )
         })()}
@@ -130,9 +163,12 @@ export function ProjectShowcase() {
 
       <div className="space-y-0">
         {projects.map((project, index) => (
-          <a
+          <motion.a
             key={project.title}
             href="#work-experience"
+            initial={hasEntered ? { opacity: 0, x: -20 } : { opacity: 0, x: -20 }}
+            animate={hasEntered ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+            transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
             className="group block"
             onClick={(e) => {
               e.preventDefault()
@@ -170,12 +206,12 @@ export function ProjectShowcase() {
                 </span>
               </div>
             </div>
-          </a>
+          </motion.a>
         ))}
 
         <div className="border-t border-border" />
       </div>
-    </section>
+    </motion.section>
   )
 }
 

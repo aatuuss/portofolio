@@ -1,20 +1,42 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 
 export const ProfessionalConnect = () => {
   const [, setHoveredIndex] = useState(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [hasEntered, setHasEntered] = useState(false);
+  const containerRef = useRef(null);
 
   useEffect(() => {
-    setIsLoaded(true);
     const handleMouseMove = (e) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
+
+  // Scroll entrance animation detection
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !hasEntered) {
+            setHasEntered(true)
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [hasEntered])
 
   const socialPlatforms = [
     {
@@ -69,14 +91,19 @@ export const ProfessionalConnect = () => {
   ];
 
   return (
-    <div className="bg-transparent overflow-hidden relative w-full py-12">
+    <motion.div
+      ref={containerRef}
+      initial={{ opacity: 0, y: 40 }}
+      animate={hasEntered ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="bg-transparent overflow-hidden relative w-full py-12">
       {/* Animated Background */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-purple-900/20 via-transparent to-transparent"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,var(--tw-gradient-stops))] from-purple-900/20 via-transparent to-transparent"></div>
         
         {/* Animated Grid */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-size-[4rem_4rem] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
         
         {/* Floating Orbs */}
         <div className="absolute top-20 left-20 w-72 h-72 bg-blue-600/30 rounded-full blur-[128px] animate-pulse"></div>
@@ -86,36 +113,62 @@ export const ProfessionalConnect = () => {
       {/* Main Content */}
       <div className="relative z-10 flex flex-col items-center justify-center px-6">
         {/* Header Section */}
-        <div className={`text-center mb-10 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="inline-block mb-4 px-4 py-1.5 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full border border-blue-500/20">
-            <span className="text-sm font-medium bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Connect
-            </span>
-          </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={hasEntered ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="text-center mb-16 relative"
+        >
+          {/* Subtle background glow for header */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-indigo-500/10 blur-[100px] -z-10 rounded-full" />
           
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
-              <span className="bg-gradient-to-br from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={hasEntered ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="inline-flex items-center gap-2 mb-6 px-5 py-2 bg-white/5 backdrop-blur-xl rounded-full border border-indigo-500/30 shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] transition-all duration-300"
+          >
+            <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+            <span className="text-sm font-bold tracking-widest uppercase bg-linear-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+              Connect With Me
+            </span>
+            <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse delay-75" />
+          </motion.div>
+          
+          <motion.h2
+            initial={{ opacity: 0, y: 10 }}
+            animate={hasEntered ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-5xl md:text-7xl font-extrabold mb-6 tracking-tighter"
+          >
+            <span className="bg-linear-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent drop-shadow-sm">
               Get In Touch
             </span>
-          </h2>
+          </motion.h2>
           
-          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Get in touch with me for projects, collaborations, or questions. I'll respond as soon as I can.
-          </p>
-        </div>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={hasEntered ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="text-lg md:text-xl text-foreground/70 max-w-2xl mx-auto leading-relaxed font-medium"
+          >
+            Have a project in mind or just want to say hi? <br className="hidden md:block" />
+            I'm always open to discussing new <span className="text-indigo-400 font-semibold">opportunities</span> and <span className="text-pink-400 font-semibold">collaborations</span>.
+          </motion.p>
+        </motion.div>
 
         {/* Social Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {socialPlatforms.map((platform, index) => (
-            <a
+            <motion.a
               key={platform.name}
               href={platform.link}
               target="_blank"
               rel="noopener noreferrer"
-              className={`group relative transition-all duration-700 ${
-                isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-              }`}
-              style={{ transitionDelay: `${index * 100}ms` }}
+              initial={hasEntered ? { opacity: 0, y: 20, scale: 0.9 } : { opacity: 0, y: 20, scale: 0.9 }}
+              animate={hasEntered ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 20, scale: 0.9 }}
+              transition={{ duration: 0.5, delay: 0.4 + index * 0.1, ease: "easeOut" }}
+              className="group relative"
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
             >
@@ -123,7 +176,7 @@ export const ProfessionalConnect = () => {
               <div className="relative bg-secondary/40 backdrop-blur-xl rounded-2xl p-6 border border-border/50 overflow-hidden transition-all duration-500 hover:scale-105 hover:border-foreground/20 hover:bg-secondary/60">
                 {/* Hover Gradient Effect */}
                 <div 
-                  className={`absolute inset-0 bg-gradient-to-br ${platform.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}
+                  className={`absolute inset-0 bg-linear-to-br ${platform.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}
                 ></div>
                 
                 {/* Glow Effect */}
@@ -138,7 +191,7 @@ export const ProfessionalConnect = () => {
                 {/* Content */}
                 <div className="relative z-10">
                   {/* Icon Container */}
-                  <div className={`mb-3 inline-flex p-3 rounded-xl bg-gradient-to-br ${platform.gradient} text-white transform transition-transform duration-500 group-hover:rotate-6 group-hover:scale-110`}>
+                  <div className={`mb-3 inline-flex p-3 rounded-xl bg-linear-to-br ${platform.gradient} text-white transform transition-transform duration-500 group-hover:rotate-6 group-hover:scale-110`}>
                     {platform.icon}
                   </div>
                   
@@ -167,9 +220,9 @@ export const ProfessionalConnect = () => {
                 </div>
 
                 {/* Shimmer Effect */}
-                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-linear-to-r from-transparent via-white/5 to-transparent"></div>
               </div>
-            </a>
+            </motion.a>
           ))}
         </div>
       </div>
@@ -183,6 +236,6 @@ export const ProfessionalConnect = () => {
           top: `${mousePosition.y - 192}px`,
         }}
       />
-    </div>
+    </motion.div>
   );
 };
