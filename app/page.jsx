@@ -1,137 +1,171 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { MinimalistHero } from '@/components/ui/minimalist-hero';
-import AnimatedCardStack from '@/components/ui/animate-card-animation';
-import { LinkPreview } from '@/components/ui/link-preview';
+import React, { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import AuroraBackground from '@/components/ui/aurora-background';
-import { ProfessionalConnect } from '@/components/ui/get-in-touch';
+import { Navbar } from '@/components/ui/navbar';
+import AboutHero from '@/components/ui/about';
+import { LinkPreview } from '@/components/ui/link-preview';
+import AnimatedCardStack from '@/components/ui/animate-card-animation';
 import ProjectShowcase from '@/components/ui/project-showcase';
-import { TextScramble } from '@/components/ui/text-scramble';
+import { ProfessionalConnect } from '@/components/ui/get-in-touch';
+import { Typewriter } from '@/components/ui/typewriter';
+import { ArrowRight, LayoutGrid, Rocket, Sparkles, Smartphone } from 'lucide-react';
 
-const navLinks = [
-  { label: 'HOME', href: '#home' },
-  { label: 'PROJECTS', href: '#work-experience' },
-  { label: 'CONTACT', href: '#contact' },
+	const homeCards = [
+	{ title: 'Frontend Craft', description: 'Landing page, company profile, dan portfolio yang terasa premium, cepat, dan responsif.', icon: LayoutGrid },
+	{ title: 'Interactive Motion', description: 'Animasi halus dan transisi yang dipakai untuk memperjelas fokus, bukan sekadar hiasan.', icon: Sparkles },
+	{ title: 'Mobile First', description: 'Setiap layout disusun agar tetap rapi di layar kecil, tablet, dan desktop.', icon: Smartphone },
+	{ title: 'Launch Ready', description: 'Struktur konten, performa, dan SEO disiapkan supaya siap dipresentasikan ke klien.', icon: Rocket },
 ];
 
 export default function Home() {
-  const [showIntro, setShowIntro] = useState(true);
+	const [showIntro, setShowIntro] = useState(true);
 
-  useEffect(() => {
-    if (showIntro) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+	const scrollToPortfolio = () => {
+		const target = document.getElementById('work-experience');
 
-    const handleScroll = (e) => {
-      if (showIntro && e.deltaY > 10) setShowIntro(false);
-    };
+		if (target) {
+			target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		}
+	};
 
-    let touchStartY = 0;
-    const handleTouchStart = (e) => { touchStartY = e.touches[0].clientY; };
-    const handleTouchMove = (e) => {
-      if (showIntro && touchStartY - e.touches[0].clientY > 20) setShowIntro(false);
-    };
+	useEffect(() => {
+		document.body.style.overflow = showIntro ? 'hidden' : 'unset';
 
-    if (showIntro) {
-      window.addEventListener("wheel", handleScroll);
-      window.addEventListener("touchstart", handleTouchStart);
-      window.addEventListener("touchmove", handleTouchMove);
-    }
+		const handleScroll = (event) => {
+			if (showIntro && event.deltaY > 10) setShowIntro(false);
+		};
 
-    return () => {
-      document.body.style.overflow = 'unset';
-      window.removeEventListener("wheel", handleScroll);
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchmove", handleTouchMove);
-    };
-  }, [showIntro]);
+		if (showIntro) {
+			window.addEventListener('wheel', handleScroll);
+		}
 
-  return (
-    <>
-      <AnimatePresence>
-        {showIntro && (
-          <motion.div
-            initial={{ opacity: 1 }}
-            exit={{
-              opacity: 0,
-              transition: { duration: 0.8, ease: "easeInOut" }
-            }}
-            className="fixed inset-0 z-[100] w-full h-[100dvh] bg-background flex flex-col items-center justify-center cursor-pointer"
-            onClick={() => setShowIntro(false)}
-          >
-            <motion.div
-              exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.4 } }}
-              className="flex flex-col items-center justify-center w-full h-full relative"
-            >
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_center,rgba(255,255,255,0.03)_0%,transparent_60%)] pointer-events-none" />
+		return () => {
+			document.body.style.overflow = 'unset';
+			window.removeEventListener('wheel', handleScroll);
+		};
+	}, [showIntro]);
 
-              <h1 className="text-3xl md:text-5xl font-light tracking-[0.2em] text-muted-foreground mb-8 uppercase text-center px-4 animate-pulse">
-                Scroll down to reveal
-              </h1>
+	return (
+		<>
+			<AnimatePresence>
+				{showIntro && (
+					<motion.div
+						initial={{ opacity: 1 }}
+						exit={{ opacity: 0, transition: { duration: 0.8, ease: 'easeInOut' } }}
+						className="fixed inset-0 z-9999 flex h-dvh w-full cursor-pointer flex-col items-center justify-center bg-background"
+						onClick={() => setShowIntro(false)}
+					>
+						<motion.div exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.4 } }} className="relative flex h-full w-full flex-col items-center justify-center">
+							<div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_center,rgba(255,255,255,0.03)_0%,transparent_60%)]" />
 
-              <div className="w-[1px] h-32 bg-gradient-to-b from-muted-foreground to-transparent overflow-hidden">
-                <motion.div
-                  animate={{ y: [0, 100, 0] }}
-                  transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                  className="w-full h-full bg-white/50"
-                />
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+							<h1 className="mb-8 px-4 text-center text-3xl font-light uppercase tracking-[0.2em] text-muted-foreground animate-pulse md:text-5xl">
+								Scroll down to reveal
+							</h1>
 
-      <AuroraBackground>
+							<div className="h-32 w-px overflow-hidden bg-linear-to-b from-muted-foreground to-transparent">
+								<motion.div animate={{ y: [0, 100, 0] }} transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }} className="h-full w-full bg-white/50" />
+							</div>
+						</motion.div>
+					</motion.div>
+				)}
+			</AnimatePresence>
 
-        <div id="home" />
-        <MinimalistHero
-          className="bg-transparent! min-h-[70vh]!"
-          logoText={
-            <TextScramble as="span" className="inline-block text-xl font-bold tracking-wider">
-              PORTOFOLIO
-            </TextScramble>
-          }
-          navLinks={navLinks}
-          mainText={
-            <div className="space-y-4">
-              <p>
-                Frontend Developer & UI/UX Designer with over 1 year of experience building responsive and modern websites using{' '}
-                <LinkPreview url="https://nextjs.org" className="font-semibold text-foreground underline decoration-foreground/30 underline-offset-4">Next.js</LinkPreview>
-                ,{' '}
-                <LinkPreview url="https://react.dev" className="font-semibold text-foreground underline decoration-foreground/30 underline-offset-4">React</LinkPreview>
-                , and{' '}
-                <LinkPreview url="https://laravel.com" className="font-semibold text-foreground underline decoration-foreground/30 underline-offset-4">Laravel</LinkPreview>, as well as transforming Figma designs into production-ready code.
-              </p>
-              <p>
-                Experienced in improving the performance and SEO of corporate websites and creating user-friendly interfaces. Ready to contribute in a dynamic and agile environment.
-              </p>
+			<AuroraBackground>
+				<div className="relative z-10">
+					<Navbar />
+				</div>
 
-            </div>
-          }
-          imageSrc="/img/nikmatus_remove.png"
-          imageAlt="Foto Nikmatus"
-          overlayText={{ part1: 'Nikmatus', part2: 'Solihah' }}
-          startAnimation={!showIntro}
-        />
+				<main className="relative overflow-hidden px-6 pb-12 pt-12 md:px-12 md:pt-16">
+                    
 
-        <div id="work-experience" style={{ scrollMarginTop: '96px' }} className="mx-auto w-full max-w-5xl py-8 px-6 md:px-12">
-          <h2 className="text-3xl font-bold mb-6 text-center">
-            <TextScramble as="span" className="uppercase tracking-widest text-foreground">Work Experience</TextScramble>
-          </h2>
-          <div className="mx-auto w-full max-w-2xl">
-            <AnimatedCardStack />
-          </div>
-        </div>
+					<section id="home" className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-6 pt-20 pb-8 text-center md:pt-12 md:pb-10">
+						<motion.div
+							className="relative z-10 max-w-5xl"
+							initial={{ opacity: 0, y: 24 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.8, ease: 'easeOut' }}
+						>
+							<div className="mx-auto flex max-w-5xl flex-col items-center gap-8 text-center">
+								
 
-        {/* Selected Work */}
-        <ProjectShowcase />
-        <div id="contact" />
-        <ProfessionalConnect />
-      </AuroraBackground>
-    </>
-  );
+								<h1
+									style={{ fontFamily: 'var(--font-geist-sans)' }}
+									className="animate-fade-rise max-w-4xl text-balance text-[clamp(3.5rem,10vw,8.75rem)] font-black uppercase leading-[0.82] -tracking-widest"
+								>
+									<span className="block tracking-normal text-slate-950 drop-shadow-[0_1px_0_rgba(255,255,255,0.55)]">
+										Hai!! <span className="inline-block whitespace-nowrap">welcome my</span>
+									</span>
+									<span
+										className="block text-transparent"
+										style={{ WebkitTextStroke: '2px rgba(15, 23, 42, 0.75)' }}
+									>
+										portofolio
+									</span>
+								</h1>
+
+								<p className="animate-fade-rise-delay mx-auto max-w-2xl text-sm leading-7 text-foreground/70 sm:text-base">
+									Sebuah ruang singkat untuk melihat karya, pengalaman, dan pendekatan saya membangun tampilan yang rapi, cepat, dan terasa premium.
+								</p>
+
+								<motion.a
+									href="/CV/CV%20Nikmatus%20Solihah.pdf"
+									download
+									whileHover={{ y: -2 }}
+									whileTap={{ scale: 0.98 }}
+									className="animate-fade-rise-delay-2 group inline-flex items-center gap-3 rounded-full border border-white/10 bg-black px-3 py-2 sm:px-8 sm:py-3.5 text-white transition-all duration-300 hover:border-white/20 hover:bg-white hover:text-black hover:shadow-[0_18px_60px_-18px_rgba(255,255,255,0.45)]"
+								>
+									<span className="flex h-10 w-10 sm:h-10 sm:w-10 items-center justify-center rounded-full border border-white/15 bg-black text-white transition-all duration-300 group-hover:border-black/80 group-hover:bg-white group-hover:text-black">
+										<ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+									</span>
+									<span className="text-[11px] sm:text-[13px] font-semibold uppercase tracking-[0.22em]">
+										Get My CV
+									</span>
+								</motion.a>
+							</div>
+						</motion.div>
+					</section>
+
+					{/* About (in-page) */}
+					<div className="pointer-events-none -mb-10 h-16 bg-linear-to-b from-transparent via-white/15 to-transparent dark:via-black/15 md:-mb-16 md:h-20" />
+
+					<section className="relative z-20 -mt-24 mx-auto w-full max-w-7xl md:-mt-32" aria-labelledby="about">
+						<AboutHero startAnimation={true} />
+					</section>
+
+					{/* Work Experience */}
+					<section id="work-experience" className="mx-auto mt-10 w-full max-w-7xl md:mt-12">
+						<h2 className="mb-8 flex flex-col items-center justify-center gap-3 text-center">
+				
+								
+							<span className="max-w-3xl bg-linear-to-r from-foreground via-foreground to-muted-foreground bg-clip-text text-2xl font-extrabold tracking-tight text-transparent sm:text-3xl md:text-4xl">
+								<Typewriter
+									text="Selected roles and projects"
+									speed={55}
+									waitTime={1200}
+									deleteSpeed={35}
+									loop={true}
+									cursorChar="_"
+									className="inline-flex items-center gap-1"
+								/>
+							</span>
+							<span className="h-px w-24 bg-linear-to-r from-transparent via-cyan-400/60 to-transparent" />
+						</h2>
+						<AnimatedCardStack />
+					</section>
+
+					{/* Certification (original view) */}
+					<section id="certification" className="mx-auto mt-16 w-full max-w-7xl">
+						<ProjectShowcase />
+					</section>
+
+					{/* Contact */}
+					<div id="contact" />
+					<ProfessionalConnect />
+				</main>
+			</AuroraBackground>
+		</>
+	);
 }
+

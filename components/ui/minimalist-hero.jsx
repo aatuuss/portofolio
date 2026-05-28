@@ -1,27 +1,17 @@
 "use client";
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import ButtonColorful from '@/components/ui/button-colorful';
 import { EducationModal } from '@/components/ui/education-modal';
 import { TextScramble } from '@/components/ui/text-scramble';
 import { TypingText } from '@/components/ui/typing-text';
+import { SiteNavbar } from '@/components/ui/site-navbar';
 
 // Helper: gabungkan class names
 function cn(...classes) {
   return classes.filter(Boolean).join(' ');
 }
-
-// Komponen NavLink
-const NavLink = ({ href, children }) => (
-  <a
-    href={href}
-    className="relative text-sm font-bold tracking-widest text-foreground/80 transition-all duration-300 hover:text-indigo-500 hover:drop-shadow-[0_0_12px_rgba(99,102,241,0.5)] group"
-  >
-    {children}
-    <span className="absolute -bottom-1.5 left-1/2 h-[2px] w-0 -translate-x-1/2 bg-indigo-500 transition-all duration-300 group-hover:w-full group-hover:shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
-  </a>
-);
 
 // Komponen SocialIcon
 const SocialIcon = ({ href, icon: Icon }) => (
@@ -45,76 +35,19 @@ export const MinimalistHero = ({
   startAnimation = true,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <div
       className={cn(
-        'relative flex min-h-svh h-auto w-full flex-col items-center justify-start overflow-visible bg-transparent px-4 pb-10 pt-24 font-sans md:h-screen md:justify-between md:px-12 md:pb-12 md:pt-32 after:absolute after:inset-0 after:pointer-events-none after:bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.08),transparent_40%)]',
+          'relative flex min-h-svh h-auto w-full flex-col items-center justify-start overflow-visible bg-transparent px-4 pb-10 pt-14 font-sans md:h-screen md:justify-between md:px-12 md:pb-12 md:pt-20 after:absolute after:inset-0 after:pointer-events-none after:bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.04),transparent_45%)]',
         className
       )}
     >
       {/* Animated Grid Background */}
-      <div className="absolute inset-0 z-0 opacity-30">
+        <div className="absolute inset-0 z-0 opacity-18">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-size-[4rem_4rem] mask-[radial-gradient(ellipse_80%_50%_at_50%_50%,#000_70%,transparent_100%)] dark:bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)]" />
       </div>
-      {/* Header */}
-      <header className="fixed left-1/2 top-6 z-50 w-[90%] max-w-5xl -translate-x-1/2 rounded-full border border-white/10 bg-background/40 px-6 py-4 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] transition-all duration-500 hover:bg-background/60 md:px-10">
-        <div className="mx-auto flex w-full items-center justify-between">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: false, amount: 0.1 }}
-          transition={{ duration: 0.5 }}
-          className="text-xl font-bold tracking-wider"
-        >
-          {logoText}
-        </motion.div>
-        <div className="hidden items-center space-x-8 md:flex">
-          {navLinks.map((link) => (
-            <NavLink key={link.label} href={link.href}>
-              {link.label}
-            </NavLink>
-          ))}
-        </div>
-        <motion.button
-          initial={{ opacity: 0, x: 20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: false, amount: 0.1 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col space-y-1.5 md:hidden z-50 p-2"
-          aria-label="Toggle menu"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          <span className={cn("block h-0.5 w-6 bg-foreground transition-transform", isMenuOpen && "translate-y-2 rotate-45")}></span>
-          <span className={cn("block h-0.5 w-6 bg-foreground transition-opacity", isMenuOpen && "opacity-0")}></span>
-          <span className={cn("block h-0.5 w-5 bg-foreground transition-all", isMenuOpen && "w-6 -translate-y-2 -rotate-45")}></span>
-        </motion.button>
-
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="absolute left-8 right-8 top-24 z-40 flex flex-col items-center space-y-6 rounded-2xl bg-background/95 border border-border/50 p-8 shadow-2xl backdrop-blur-lg md:hidden"
-            >
-              {navLinks.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  onClick={() => setIsMenuOpen(false)}
-                  className="text-lg font-bold tracking-widest text-foreground transition-colors hover:text-primary"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-        </div>
-      </header>
+      <SiteNavbar logoText={logoText} navLinks={navLinks} />
 
       {/* Area Konten Utama */}
       <div className="relative z-10 grid w-full max-w-7xl grow grid-cols-1 items-center gap-8 py-8 md:gap-0 md:py-0 md:grid-cols-3">
@@ -136,7 +69,7 @@ export const MinimalistHero = ({
             transition={{ duration: 0.6, delay: 0.6 }}
             className="mt-6"
           >
-            <ButtonColorful label="Explore Components" onClick={() => setIsModalOpen(true)} />
+            <ButtonColorful label="More About Me" onClick={() => setIsModalOpen(true)} />
           </motion.div>
         </motion.div>
 
@@ -189,7 +122,7 @@ export const MinimalistHero = ({
               as="span"
               speed={150}
               start={startAnimation}
-              className="block text-4xl sm:text-6xl font-extrabold leading-none bg-linear-to-br from-foreground via-indigo-400 to-foreground/70 bg-clip-text text-transparent md:text-5xl lg:text-8xl"
+              className="block text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-none bg-linear-to-br from-foreground via-indigo-400 to-foreground/70 bg-clip-text text-transparent"
             >
               {`${overlayText.part1} ${overlayText.part2}`}
             </TypingText>

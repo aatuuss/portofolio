@@ -119,13 +119,11 @@ const positionStyles = [
 const exitAnimation = {
   y: 340,
   scale: 1,
+  opacity: 0,
   zIndex: 10,
+  transition: { duration: 0.45, ease: "easeIn" },
 }
 
-const enterAnimation = {
-  y: -16,
-  scale: 0.9,
-}
 
 function CardContent({ contentType, isExpanded, onToggle, cardId }) {
   const data = cardData[contentType]
@@ -170,7 +168,7 @@ function CardContent({ contentType, isExpanded, onToggle, cardId }) {
 
         <div className="flex flex-1 flex-col gap-3 px-4 pb-4 pt-4">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/15 bg-indigo-500/10 px-2.5 py-1 text-[10px] font-semibold text-indigo-500">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/15 bg-indigo-500/10 px-2.5 py-1 text-[10px] font-semibold text-indigo-400">
               <MapPin className="size-3" />
               {data.location}
             </span>
@@ -206,7 +204,7 @@ function CardContent({ contentType, isExpanded, onToggle, cardId }) {
                           href={link.url} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${link.type === 'figma' ? 'bg-[#F24E1E]/10 text-[#F24E1E] hover:bg-[#F24E1E]/20' : 'bg-indigo-500/10 text-indigo-500 hover:bg-indigo-500/20'}`}
+                          className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${link.type === 'figma' ? 'bg-[#F24E1E]/10 text-[#F24E1E] hover:bg-[#F24E1E]/20' : 'bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20'}`}
                           onClick={(e) => e.stopPropagation()}
                         >
                           {link.type === 'figma' ? <FigmaIcon className="size-3" /> : <ExternalLink className="size-3" />}
@@ -220,16 +218,21 @@ function CardContent({ contentType, isExpanded, onToggle, cardId }) {
             )}
           </AnimatePresence>
           
+          {/* PERBAIKAN TOMBOL: Dibuat sangat kontras, tidak samar/nyaru dengan card */}
           <div className="mt-auto pt-2">
             <button
               type="button"
               onClick={() => onToggle(cardId)}
-              className="flex h-9 w-full shrink-0 cursor-pointer select-none items-center justify-center gap-1.5 rounded-full border border-border/60 bg-linear-to-r from-secondary via-secondary to-secondary/70 text-[11px] font-semibold text-secondary-foreground shadow-[0_10px_24px_-18px_rgba(15,23,42,0.9)] transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-500/30 hover:bg-secondary/90"
+              className={`flex h-9 w-full shrink-0 cursor-pointer select-none items-center justify-center gap-1.5 rounded-full border text-[11px] font-bold tracking-wider uppercase transition-all duration-300 transform-gpu hover:-translate-y-0.5 active:scale-98 ${
+                isExpanded 
+                  ? 'border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 shadow-[0_4px_20px_rgba(244,63,94,0.15)]' 
+                  : 'border-indigo-500/40 bg-indigo-600 text-white hover:bg-indigo-500 shadow-[0_4px_20px_rgba(79,70,229,0.35)] hover:shadow-[0_4px_25px_rgba(79,70,229,0.5)]'
+              }`}
             >
               {isExpanded ? (
                 <>
                   Show Less <ChevronUp className="size-3" />
-                </>
+                </                >
               ) : (
                 <>
                   View Details <ChevronDown className="size-3" />
@@ -260,7 +263,7 @@ function CardContent({ contentType, isExpanded, onToggle, cardId }) {
         </div>
         <button
           type="button"
-          className="flex h-10 shrink-0 cursor-pointer select-none items-center gap-0.5 rounded-full bg-foreground pl-4 pr-3 text-sm font-medium text-background"
+          className="flex h-10 shrink-0 cursor-pointer select-none items-center gap-0.5 rounded-full bg-indigo-600 pl-4 pr-3 text-sm font-medium text-white shadow-[0_4px_15px_rgba(79,70,229,0.3)] hover:bg-indigo-500"
         >
           Read
           <ArrowRight className="size-4" />
@@ -270,23 +273,27 @@ function CardContent({ contentType, isExpanded, onToggle, cardId }) {
   )
 }
 
-function AnimatedCard({ card, index, isAnimating, isExpanded, onToggle }) {
+function AnimatedCard({ card, index, isAnimating, isExpanded, onToggle, hasEntered }) {
   const { scale, y } = positionStyles[index] ?? positionStyles[2]
   const zIndex = index === 0 && isAnimating ? 10 : 3 - index
 
   const exitAnim = index === 0 ? exitAnimation : undefined
-  const initialAnim = index === 2 ? enterAnimation : undefined
+  const initialAnim = hasEntered ? { opacity: 0, scale: 0.85, y: y + 18 } : false
 
   return (
     <motion.div
       key={card.id}
       initial={initialAnim}
-      animate={{ y, scale }}
+      animate={{ opacity: 1, y, scale }}
       exit={exitAnim}
+      layout
       transition={{
         type: "spring",
-        duration: 1,
+        stiffness: 160,
+        damping: 22,
+        mass: 0.6,
         bounce: 0,
+        delay: hasEntered ? index * 0.08 : 0,
       }}
       style={{
         zIndex,
@@ -294,7 +301,7 @@ function AnimatedCard({ card, index, isAnimating, isExpanded, onToggle }) {
         x: "-50%",
         bottom: 0,
       }}
-      className={`group absolute flex ${isExpanded ? 'h-auto' : 'h-79'} w-81 items-center justify-center overflow-hidden rounded-[28px] border border-white/10 bg-linear-to-br from-card via-card to-secondary/35 p-1 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.55)] ring-1 ring-white/5 backdrop-blur-xl will-change-transform sm:w-lg`}
+      className={`group absolute flex ${isExpanded ? 'h-auto' : 'h-79'} w-81 origin-bottom items-center justify-center overflow-hidden rounded-[28px] border border-white/10 bg-linear-to-br from-card via-card to-secondary/35 p-1 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.55)] ring-1 ring-white/5 backdrop-blur-xl will-change-transform transform-gpu sm:w-lg`}
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(99,102,241,0.18),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(56,189,248,0.12),transparent_35%)]" />
       <div className="pointer-events-none absolute inset-px rounded-[26px] border border-white/5" />
@@ -311,7 +318,6 @@ export default function AnimatedCardStack() {
   const [hasEntered, setHasEntered] = useState(false)
   const containerRef = useRef(null)
 
-  // Detect scroll into view for entrance animation
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -340,16 +346,13 @@ export default function AnimatedCardStack() {
   }
 
   const handleAnimate = () => {
-    // prevent triggering while an animation is already running
     if (isAnimating) return
 
     setIsAnimating(true)
 
-    // pick the content of the buffered card (index 3) to compute the next one
     const lastBufferedContent = cards[3]?.contentType ?? cards[cards.length - 1].contentType
     const nextContentType = (lastBufferedContent % TOTAL_CONTENT) + 1
 
-    // ensure generated id is unique based on current cards
     const maxId = cards.reduce((m, c) => Math.max(m, c.id), 0)
     const newId = Math.max(nextId, maxId + 1)
 
@@ -372,24 +375,15 @@ export default function AnimatedCardStack() {
       <motion.div className="relative min-h-105 w-full overflow-visible sm:w-161">
         <AnimatePresence initial={false}>
           {cards.slice(0, 3).map((card, index) => (
-            <motion.div
+            <AnimatedCard 
               key={card.id}
-              initial={hasEntered ? { opacity: 0, scale: 0.8 } : false}
-              animate={hasEntered ? { opacity: 1, scale: 1 } : false}
-              transition={{
-                duration: 0.5,
-                delay: index * 0.15,
-                ease: "easeOut"
-              }}
-            >
-              <AnimatedCard 
-                card={card} 
-                index={index} 
-                isAnimating={isAnimating}
-                isExpanded={expandedCards[card.id] || false}
-                onToggle={handleToggleExpand}
-              />
-            </motion.div>
+              card={card} 
+              index={index} 
+              isAnimating={isAnimating}
+              isExpanded={expandedCards[card.id] || false}
+              onToggle={handleToggleExpand}
+              hasEntered={hasEntered}
+            />
           ))}
         </AnimatePresence>
       </motion.div>
