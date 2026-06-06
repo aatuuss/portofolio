@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { TextScramble } from '@/components/ui/text-scramble';
 
@@ -26,6 +27,10 @@ export function NavbarLogo() {
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const rootRef = useRef(null);
+  const toggleButtonRef = useRef(null);
+  const menuRef = useRef(null);
+    const [mounted, setMounted] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,8 +43,46 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const handleOutsideClick = (e) => {
+      // Ignore clicks inside the root, the menu itself, or the toggle button
+      if (!rootRef.current) return;
+      if (rootRef.current.contains(e.target)) return;
+      if (menuRef.current && menuRef.current.contains(e.target)) return;
+      if (toggleButtonRef.current && toggleButtonRef.current.contains(e.target)) return;
+
+      setIsMenuOpen(false);
+    };
+
+    const handleHashChange = () => setIsMenuOpen(false);
+
+    const handleResize = () => {
+      if (window.innerWidth >= 768) setIsMenuOpen(false);
+    };
+
+    const handleKey = (e) => {
+      if (e.key === 'Escape') setIsMenuOpen(false);
+    };
+
+    window.addEventListener('mousedown', handleOutsideClick);
+    window.addEventListener('hashchange', handleHashChange);
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('keydown', handleKey);
+
+    return () => {
+      window.removeEventListener('mousedown', handleOutsideClick);
+      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('keydown', handleKey);
+    };
+  }, [isMenuOpen]);
+
+  // No extra mount/display hacks — render menu only when open to avoid hydration mismatches
+
   return (
-    <div className="fixed left-1/2 top-6 z-50 w-[90%] max-w-5xl -translate-x-1/2">
+    <div ref={rootRef} className="fixed left-1/2 top-6 z-50 w-[90%] max-w-5xl -translate-x-1/2">
     <motion.header
       animate={{
         scale: isScrolled ? 1.01 : 1,
@@ -88,6 +131,7 @@ export function Navbar() {
           aria-expanded={isMenuOpen}
           aria-controls="mobile-navbar-menu"
           onClick={() => setIsMenuOpen((value) => !value)}
+          ref={toggleButtonRef}
         >
           <span className={cn('block h-0.5 w-6 bg-foreground transition-transform duration-300', isMenuOpen && 'translate-y-2 rotate-45')} />
           <span className={cn('block h-0.5 w-6 bg-foreground transition-opacity duration-300', isMenuOpen && 'opacity-0')} />
@@ -96,30 +140,26 @@ export function Navbar() {
       </div>
     </motion.header>
 
-    <AnimatePresence>
-      {isMenuOpen && (
-        <motion.div
-          id="mobile-navbar-menu"
-          initial={{ opacity: 0, y: -16, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -16, scale: 0.98 }}
-          transition={{ duration: 0.22, ease: 'easeOut' }}
-          className="absolute left-0 right-0 top-[calc(100%+0.75rem)] mx-auto flex w-full flex-col gap-3 rounded-3xl border border-white/10 bg-background/95 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.22)] backdrop-blur-xl md:hidden"
-        >
-          {navLinks.map((link) => (
-            <motion.a
-              key={link.label}
-              href={link.href}
-              onClick={() => setIsMenuOpen(false)}
-              className="rounded-2xl border border-white/5 px-4 py-3 text-center text-sm font-bold tracking-[0.22em] text-foreground/85 transition-colors hover:border-white/10 hover:bg-white/5 hover:text-indigo-500"
-              whileTap={{ scale: 0.98 }}
-            >
-              {link.label}
-            </motion.a>
-          ))}
-        </motion.div>
-      )}
-    </AnimatePresence>
+    {/* Render menu always but hide/show with inline style to avoid mount issues */}
+    {isMenuOpen && (
+      <div
+        id="mobile-navbar-menu"
+        ref={menuRef}
+        className="fixed left-4 right-4 top-24 mx-auto flex w-[calc(100%-2rem)] max-w-3xl flex-col gap-3 rounded-3xl border border-white/10 bg-white text-black p-5 shadow-[0_24px_80px_rgba(0,0,0,0.22)] md:hidden z-50 pointer-events-auto"
+        aria-hidden={!isMenuOpen}
+      >
+        {navLinks.map((link) => (
+          <a
+            key={link.label}
+            href={link.href}
+            onClick={() => setIsMenuOpen(false)}
+            className="block rounded-2xl border border-white/5 px-4 py-3 text-center text-sm font-bold tracking-[0.22em] text-foreground/85 transition-colors hover:border-white/10 hover:bg-white/5 hover:text-indigo-500"
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
+    )}
     </div>
   );
 }
